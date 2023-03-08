@@ -252,6 +252,46 @@ def getpatientsdatawithid(id):
         return df
 
 
+
+@app.route("/add_patients", methods=["GET", "POST"])
+def add_patient():
+    try:
+        if request.method == "POST":
+            
+            patientname = request.form['patientname']
+            patientsurname = request.form['patientsurname']
+            disease = request.form['disease']
+            undercareof = request.form['undercareof']
+            emergencyContact = request.form['emergencyContact']
+            dateofadmit = request.form['dateofadmit']
+            address = request.form['address']
+            roomno = request.form['roomno']
+            bedno = request.form['bedno']
+            daysinhospital = request.form['daysinhospital']
+            attendeeid = request.form['attendeeid']
+            
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            sql = "INSERT INTO hospitaldb.patients_details(patientname,patientsurname,disease, undercareof, emergencyContact, dateofadmit, address, roomno, bedno, daysinhospital, attendeeid) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+            data = (patientname, patientsurname, disease, undercareof, emergencyContact, dateofadmit, address, roomno, bedno, daysinhospital, attendeeid)
+            cursor.execute(sql, data)
+            conn.commit()
+            conn.close()
+            
+            
+            return redirect("/patients")
+        return render_template('add_patient.html')
+    except Exception as e:
+        df = {
+            "Error" : "Something went wrong in Get_Patients Method",
+            "Error_Message" : e
+        }
+    
+    print("Error_Message: ", e)
+    
+    return df
+
+    
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug= True)
     # app.run(debug=True)
