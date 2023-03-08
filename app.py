@@ -93,6 +93,43 @@ def getdatawithid(id):
         return df
         
 
+
+@app.route("/addemp", methods=["GET","POST"])
+def addemp():
+    try:
+        title = "Enter"
+        if request.method == "POST":
+            print("Inside Add Emp POST request")
+            
+            empname = request.form['empname']
+            empsurname = request.form['empsurname']
+            contactno = request.form['contactno']
+            speciality = request.form['speciality']
+            salary = request.form['salary']
+            dateofjoining = request.form['dateofjoining']
+            shift = request.form['shift']
+            email = request.form['email']
+            
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            sql = "INSERT INTO hospitaldb.hospital_employees(empname,empsurname,contactno,speciality,salary,dateofjoining,shift,email) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)"
+            data = (empname, empsurname, contactno, speciality, salary, dateofjoining, shift, email)
+            cursor.execute(sql, data)
+            conn.commit()
+            conn.close()
+            
+            return redirect('/employees')
+        return render_template('employee.html', title=title)
+    except Exception as e:
+        df = {
+            "Error_Message" : "Something went wrong in addemp ",
+            "Error" : e
+        }
+        
+        print("Error: ", e)
+        return df
+ 
+    
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug= True)
     # app.run(debug=True)
