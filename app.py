@@ -212,6 +212,7 @@ def getpatientsdata():
             rows = cursor.fetchall()
             for item in rows:
                 print (item)
+            print("@@@@")
             conn.commit()
             conn.close()
             return render_template('user.html', db=db, rows=rows)
@@ -227,7 +228,30 @@ def getpatientsdata():
     
     
 
-    
+@app.route("/patient/<int:id>", methods=["GET"])
+def getpatientsdatawithid(id):
+    if request.method == "GET": 
+        try:
+            db = "patients_details"
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM patients_details where patientsid = %s", id)
+            rows = cursor.fetchall()
+            print("Patients Datawithid: ", rows)
+            conn.commit()
+            conn.close()
+            return render_template('user.html', db=db, rows=rows)
+        except Exception as e:
+            df = {
+                "Error" : "Something went wrong in Get_Patients Method",
+                "Error_Message" : e
+            }
+        
+        print("Error_Message: ", e)
+        
+        return df
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug= True)
     # app.run(debug=True)
