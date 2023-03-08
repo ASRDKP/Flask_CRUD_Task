@@ -32,9 +32,10 @@ class hospital_employee(Table):
     dateofjoining = Col('DateOfjoining')
     shift = Col('Shift')
     email = Col('Email')
+    
 
-
-
+# class hospital_patient(Table):
+    
 
 
 
@@ -145,6 +146,7 @@ def update_emp():
             dateofjoining = request.form['dateofjoining']
             shift = request.form['shift']
             email = request.form['email']
+        
             
             conn = mysql.connect()
             cursor = conn.cursor()
@@ -156,7 +158,7 @@ def update_emp():
             
             return redirect('/employees')
         
-        return render_template('employee.html', title=title)
+        return render_template('addemployee.html', title=title)
     except Exception as e:
         df = {
             "Error_Message" : "Something went wrong in update_emp",
