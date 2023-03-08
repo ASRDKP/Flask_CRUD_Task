@@ -291,6 +291,29 @@ def add_patient():
     
     return df
 
+
+   
+@app.route('/delete_patient/<int:id>', methods=['DELETE'])
+def delete_patient(id):
+    try:
+        if request.method == 'DELETE':
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            sql = "DELETE FROM hospitaldb.hospital_employees WHERE patientsid = %s"
+            data = (id)
+            cursor.execute(sql, data)
+            conn.commit()
+            conn.close()
+            return redirect('/employees')
+        
+    except Exception as e:
+        df = {
+            "Error_Message" : "Something went wrong in delete_patient ",
+            "Error" : e
+        }
+        print("Error: ", e)
+        
+        return df
     
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug= True)
