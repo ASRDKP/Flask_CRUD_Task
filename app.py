@@ -128,7 +128,45 @@ def addemp():
         
         print("Error: ", e)
         return df
- 
+    
+@app.route('/update_emp', methods=['GET','PUT'])
+def update_emp():
+    try:
+        title = "Update"
+        if request.method == 'PUT':
+            print("Inside update_emp method")
+            
+            empid = request.form['empid']
+            empname = request.form['empname']
+            empsurname = request.form['empsurname']
+            contactno = request.form['contactno']
+            speciality = request.form['speciality']
+            salary = request.form['salary']
+            dateofjoining = request.form['dateofjoining']
+            shift = request.form['shift']
+            email = request.form['email']
+            
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            sql = "Update hospitaldb.hospital_employees SET empname = %s, empsurname = %s, contactno = %s, speciality = %s, salary = %s, dateofjoining = %s, shift = %s, email = %s WHERE empid = %s"
+            data = (empname, empsurname, contactno, speciality, salary, dateofjoining, shift, email, empid)
+            cursor.execute(sql, data)
+            conn.commit()
+            conn.close()
+            
+            return redirect('/employees')
+        
+        return render_template('employee.html', title=title)
+    except Exception as e:
+        df = {
+            "Error_Message" : "Something went wrong in update_emp",
+            "Error" : e
+        }
+        
+        print("Error", e)
+
+        return df
+    
     
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug= True)
