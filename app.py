@@ -34,20 +34,25 @@ class hospital_employee(Table):
     email = Col('Email')
     
 
-# class hospital_patient(Table):
-    
+class patients_details(Table):
+    patientsid = Col('ID')
+    patientname = Col('Name')
+    patientsurname = Col('Surname')
+    disease = Col('Disease')
+    undercareof = Col('Undercareof')
+    emergencyContact = Col('EmergencyContact')
+    dateofadmit = Col('DateOfAdmit')
+    address = Col('Address')
+    roomno = Col('Roomno')
+    bedno = Col('Bedno')
+    daysinhospital = Col('DaysInHOSPITAL')
+    attendeeid = Col('AttendeeId')
 
 
 
-
-@app.route("/xcxc")
-def index():
-    rows = [(1, 'Govind', 'Sharma', 8085, 'ENT', 85000, 2014, 4, 7, 0, 0, 'Morning', 'sharmagovind92@gmail.com'),(4, 'Rohan', 'Kundra', 5456465, 'Ear', 434343, 2003, 2, 12, 2, 1, 'Morning', 'gfdfsdtst@gmail.com')]
-    # return "fdfdgff"
-    return render_template("user.html", rows=rows)
 
 @app.route("/employees", methods=["GET"])
-def getdata():
+def getempdata():
 
     if request.method == "GET":
         try:
@@ -73,7 +78,7 @@ def getdata():
     
     
 @app.route("/employee/<int:id>")
-def getdatawithid(id):
+def getempdatawithid(id):
     db = "hospital_employees"
     try:
         if request.method == "GET" and id != None:
@@ -95,10 +100,9 @@ def getdatawithid(id):
         
 
 
-@app.route("/addemp", methods=["GET","POST"])
-def addemp():
+@app.route("/add_emp", methods=["GET","POST"])
+def add_emp():
     try:
-        title = "Enter"
         if request.method == "POST":
             print("Inside Add Emp POST request")
             
@@ -120,7 +124,7 @@ def addemp():
             conn.close()
             
             return redirect('/employees')
-        return render_template('employee.html', title=title)
+        return render_template('employee.html')
     except Exception as e:
         df = {
             "Error_Message" : "Something went wrong in addemp ",
@@ -158,7 +162,7 @@ def update_emp():
             
             return redirect('/employees')
         
-        return render_template('addemployee.html', title=title)
+        return render_template('updateemployee.html', title=title)
     except Exception as e:
         df = {
             "Error_Message" : "Something went wrong in update_emp",
@@ -190,6 +194,39 @@ def delete_emp(id):
         print("Error: ", e)
         
         return df
+    
+    
+
+
+
+
+
+@app.route("/patients", methods=["GET"])
+def getpatientsdata():
+    if request.method == "GET": 
+        try:
+            db = "patients_details"
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM patients_details")
+            rows = cursor.fetchall()
+            for item in rows:
+                print (item)
+            conn.commit()
+            conn.close()
+            return render_template('user.html', db=db, rows=rows)
+        except Exception as e:
+            df = {
+                "Error" : "Something went wrong in Get_Patients Method",
+                "Error_Message" : e
+            }
+        
+        print("Error_Message: ", e)
+        
+        return df
+    
+    
+
     
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug= True)
