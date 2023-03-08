@@ -71,6 +71,28 @@ def getdata():
     
     
     
+@app.route("/employee/<int:id>")
+def getdatawithid(id):
+    db = "hospital_employees"
+    try:
+        if request.method == "GET" and id != None:
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM hospitaldb.hospital_employees where empid = %s", id)
+            rows = cursor.fetchone()
+            print("Data :- ", rows)
+            conn.commit()
+            conn.close()
+            return render_template('user.html', db=db, rows=rows)
+    except Exception as e:
+        df = {
+            "Error_Message" : "Something went wrong in GET request with id ",
+            "Error" : e
+        }
+        print("Error in GET with id in employee", e)
+        return df
+        
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug= True)
     # app.run(debug=True)
