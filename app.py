@@ -134,11 +134,11 @@ def add_emp():
         print("Error: ", e)
         return df
     
-@app.route('/update_emp/<int:id>', methods=['GET','PUT'])
+@app.route('/update_emp/<int:id>', methods=['GET','POST'])
 def update_emp(id):
     try:
-        title = "Update"
-        if request.method == 'PUT':
+        # if request.method == 'PUT':
+        if request.method == 'POST':
             print("Inside update_emp method")
             
             # empid = request.form['empid']
@@ -162,7 +162,14 @@ def update_emp(id):
             
             return redirect('/employees')
         
-        return render_template('updateemployee.html', title=title)
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM hospitaldb.hospital_employees where patientsid = %s", id)
+        empdetail = cursor.fetchone()
+        print("Employee Name#######: ", empdetail[1])
+        conn.commit()
+        conn.close()
+        return render_template('updateemployee.html', empname=empdetail[1], empsurname=empdetail[2], contactno=empdetail[3], speciality=empdetail[4], salary=empdetail[5], dateofjoining=empdetail[6], shift=empdetail[7], email=empdetail[8])
     except Exception as e:
         df = {
             "Error_Message" : "Something went wrong in update_emp",
@@ -173,10 +180,13 @@ def update_emp(id):
 
         return df
     
-@app.route('/delete_emp', methods=['GET','DELETE'])
+@app.route('/delete_emp', methods=['GET','DELETE','POST'])
 def delete_emp():
     try:
-        if request.method == 'DELETE':
+        print("Inside delete_emp()")
+        # if request.method == 'DELETE':
+        if request.method == 'POST':
+            print("Inside delete_emp")
             empid = request.form['empid']
             conn = mysql.connect()
             cursor = conn.cursor()
@@ -292,19 +302,66 @@ def add_patient():
     return df
 
 
+
+@app.route('/update_patient/<int:id>', methods=['GET','POST','PUT'])
+def update_patient(id):
+    try:
+        # if request.method == 'PUT':
+        if request.method == 'POST':
+            patientname = request.form['patientname']
+            patientsurname = request.form['patientsurname']
+            disease = request.form['disease']
+            undercareof = request.form['undercareof']
+            emergencyContact = request.form['emergencyContact']
+            dateofadmit = request.form['dateofadmit']
+            address = request.form['address']
+            roomno = request.form['roomno']
+            bedno = request.form['bedno']
+            daysinhospital = request.form['daysinhospital']
+            attendeeid = request.form['attendeeid']
+            
+            conn = mysql.connect()
+            cursor = conn.cursor()
+            sql = "UPDATE hospitaldb.patients_details SET patientname=%s,patientsurname=%s,disease=%s,undercareof=%s,emergencyContact=%s,dateofadmit=%s,address=%s,roomno=%s,bedno=%s,daysinhospital=%s,attendeeid=%s where patientsid = %s"
+            data = (patientname,patientsurname,disease,undercareof,emergencyContact,dateofadmit,address,roomno,bedno,daysinhospital,attendeeid,id)
+            cursor.execute(sql, data)
+            conn.commit()
+            conn.close()
+            return redirect("/patients")
+        
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM hospitaldb.patients_details where patientsid = %s", id)
+        patientdetail = cursor.fetchone()
+        conn.commit()
+        conn.close()
+        return render_template('update_patient.html',patientname=patientdetail[1], patientsurname=patientdetail[2], disease=patientdetail[3], undercareof=patientdetail[4], emergencyContact=patientdetail[5], dateofadmit=patientdetail[6], address=patientdetail[7], roomno=patientdetail[8], bedno=patientdetail[9], daysinhospital=patientdetail[10], attendeeid= patientdetail[11], id=id )
+    
+    except Exception as e:
+        df = {
+            "Error" : "Something went wrong in Update_Patient Method",
+            "Error_Message" : e
+        }
+        
+        print("Error_Message: ", e)
+        
+        return df
    
-@app.route('/delete_patient', methods=['GET','DELETE'])
+@app.route('/delete_patient', methods=['GET','DELETE','POST'])
 def delete_patient():
     try:
-        if request.method == 'DELETE':
+        # if request.method == 'DELETE':
+        if request.method == 'POST':
+            print("Inside Delete_Patient")
             patientsid = request.form['patientsid']
             conn = mysql.connect()
             cursor = conn.cursor()
-            sql = "DELETE FROM hospitaldb.hospital_employees WHERE patientsid = %s"
+            sql = "DELETE FROM hospitaldb.patients_details WHERE patientsid = %s"
             cursor.execute(sql, patientsid)
             conn.commit()
             conn.close()
-            return redirect('/employees')
+            print("Deleted Successfully")
+            return redirect('/patients')
         return render_template('delete_patient.html')
     except Exception as e:
         df = {
