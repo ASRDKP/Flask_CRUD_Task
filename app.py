@@ -134,14 +134,14 @@ def add_emp():
         print("Error: ", e)
         return df
     
-@app.route('/update_emp', methods=['GET','PUT'])
-def update_emp():
+@app.route('/update_emp/<int:id>', methods=['GET','PUT'])
+def update_emp(id):
     try:
         title = "Update"
         if request.method == 'PUT':
             print("Inside update_emp method")
             
-            empid = request.form['empid']
+            # empid = request.form['empid']
             empname = request.form['empname']
             empsurname = request.form['empsurname']
             contactno = request.form['contactno']
@@ -155,7 +155,7 @@ def update_emp():
             conn = mysql.connect()
             cursor = conn.cursor()
             sql = "Update hospitaldb.hospital_employees SET empname = %s, empsurname = %s, contactno = %s, speciality = %s, salary = %s, dateofjoining = %s, shift = %s, email = %s WHERE empid = %s"
-            data = (empname, empsurname, contactno, speciality, salary, dateofjoining, shift, email, empid)
+            data = (empname, empsurname, contactno, speciality, salary, dateofjoining, shift, email, id)
             cursor.execute(sql, data)
             conn.commit()
             conn.close()
@@ -173,19 +173,19 @@ def update_emp():
 
         return df
     
-@app.route('/delete_emp/<int:id>', methods=['DELETE'])
-def delete_emp(id):
+@app.route('/delete_emp', methods=['GET','DELETE'])
+def delete_emp():
     try:
         if request.method == 'DELETE':
+            empid = request.form['empid']
             conn = mysql.connect()
             cursor = conn.cursor()
             sql = "DELETE FROM hospitaldb.hospital_employees WHERE empid = %s"
-            data = (id)
-            cursor.execute(sql, data)
+            cursor.execute(sql, empid)
             conn.commit()
             conn.close()
             return redirect('/employees')
-        
+        return render_template('delete_emp.html')
     except Exception as e:
         df = {
             "Error_Message" : "Something went wrong in Delete_emp ",
@@ -293,19 +293,19 @@ def add_patient():
 
 
    
-@app.route('/delete_patient/<int:id>', methods=['DELETE'])
-def delete_patient(id):
+@app.route('/delete_patient', methods=['GET','DELETE'])
+def delete_patient():
     try:
         if request.method == 'DELETE':
+            patientsid = request.form['patientsid']
             conn = mysql.connect()
             cursor = conn.cursor()
             sql = "DELETE FROM hospitaldb.hospital_employees WHERE patientsid = %s"
-            data = (id)
-            cursor.execute(sql, data)
+            cursor.execute(sql, patientsid)
             conn.commit()
             conn.close()
             return redirect('/employees')
-        
+        return render_template('delete_patient.html')
     except Exception as e:
         df = {
             "Error_Message" : "Something went wrong in delete_patient ",
